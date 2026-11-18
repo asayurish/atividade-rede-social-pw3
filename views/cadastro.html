@@ -1,33 +1,62 @@
+
 {% extends 'base.html' %}
+
+{% block title %}Criar conta | Pinguino Chat{% endblock %}
+
 {% block content %}
 
-<!-- buscando e exibindo as flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %}
- {% for category, message in messages %}
- <div class="alert alert-{{ category }}">
+<div class="auth-container">
 
-    {{ message }}
- </div>
- {% endfor %}
- {% endwith %}
-<!-- formulario de cadastro -->
-<div class="container">
-    <div class="card mt-4">
-        <div class="card-header">
-            <h2>Cadastro do usuário</h2>
-        </div>
-        <div class="card-body">
-            <!-- formulario -->
-             <form action="{{url_for('cadastro')}}" method="POST">
-                <label>E-mail</label>
-                <input type="email" name="email" placeholder="Insira seu e-mail" class="form-control">
-                <label>Senha</label>
-                <input type="password" name="senha" placeholder="Insira sua senha" class="form-control">
-                <button type="submit" class="btn btn-danger btn-block">Cadastrar</button>
+    <div class="auth-card">
 
-            </form>
+        <div class="auth-header">
+            <h1>Vamos começar!</h1>
+            <p>Crie sua conta no Pinguino Chat.</p>
         </div>
+
+        <form action="{{ url_for('cadastro') }}" method="POST">
+
+            <div class="mb-3">
+                <label class="form-label">Nickname</label>
+                <input type="text"
+                       name="nome"
+                       class="form-control"
+                       placeholder="Como quer ser chamado?"
+                       maxlength="100"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">E-mail</label>
+                <input type="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="Seu e-mail"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password"
+                       name="senha"
+                       class="form-control"
+                       placeholder="Crie uma senha"
+                       required>
+            </div>
+
+            <button type="submit" class="btn-primary-custom">
+                CRIAR MINHA CONTA
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Já possui uma conta?
+            <a href="{{ url_for('login') }}">Entrar</a>
+        </p>
+
     </div>
+
 </div>
 
- {% endblock content %}
+{% endblock %}

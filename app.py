@@ -1,56 +1,59 @@
-# comentário em Python
-# importando o Flask na aplicação
+
 from flask import Flask
-from controllers import routes
-# importando o chat
-from controllers import chat, routes
-import os
-# importando o database e os models corretos
-from models.database import db
-
-# importando o flask-socketio
 from flask_socketio import SocketIO
+from controllers import routes, chat
+from models.database import db
+import os
 
-# carregando o Flask em uma variável
+# Inicializando o Flask
 app = Flask(__name__, template_folder='views')
 
-# Configurações do Banco de Dados (Utilizando SQLite conforme o guia de referência da atividade, ou MySQL se preferir)
+# Caminho principal do projeto
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'models/rede_social.sqlite3')
+
+# Configurações do banco de dados
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    'sqlite:///' + os.path.join(BASE_DIR, 'models/rede_social.sqlite3')
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# criando uma chave secreta (para flash messages e sessões)
+# Configurações de sessão
 app.config['SECRET_KEY'] = 'chave_secreta_rede_social'
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600
 
-# definindo o tempo da sessão
-app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hora
-
-# definindo a pasta que receberá uploads
+# Configurações de upload
 app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'static/uploads')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# definindo o tamanho máximo de arquivos de upload (16 MB)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
+# Criando a pasta de uploads
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# configurando o flask-socketio
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+# Inicializando o banco de dados
+db.init_app(app)
 
-# Enviando a variável APP (FLASK) para as rotas
+# Inicializando o SocketIO
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode='threading'
+)
+
+# Registrando as rotas
 routes.init_app(app)
-# inicializando o SocketIO
+
+# Registrando os eventos do chat
 chat.init_app(socketio)
 
-# iniciando o servidor web
+# Criando as tabelas
+with app.app_context():
+    db.create_all()
+    print("Banco de dados e tabelas criados com sucesso!")
+
+# Executando o servidor
 if __name__ == '__main__':
-    # Cria a pasta de uploads caso não exista
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    
-    # inicializar o SQLAlchemy
-    db.init_app(app=app)
-    
-    with app.app_context():
-        # criando as tabelas no banco de dados
-        db.create_all()
-        print("Banco de dados e tabelas criados com sucesso!")
-        
-    # inicia o servidor com socketio
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(
+        app,
+        host='0.0.0.0',
+        port=5000,
+        debug=True
+    )

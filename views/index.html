@@ -1,26 +1,23 @@
-<!-- importando template base -->
 {% extends 'base.html' %}
 
 {% block content %}
 
-<!-- buscando e exibindo as flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %}
- {% for category, message in messages %}
- <div class="alert alert-{{ category }}">
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
-    {{ message }}
- </div>
- {% endfor %}
- {% endwith %}
-<main>
-
-<h1>Bem-Vindo ao Pinguino Chat!</h1>
- <h3>O melhor lugar para socializar com outros pinguinos!</h3>
- <!-- <hr>
-<p><a href="/games">Games</a></p>
-<p><a href="/consoles">Consoles</a></p>
-<hr> -->
-<img src="{{url_for('static', filename='/imgs/pinguino.webp')}}" alt="Pinguino Chat" width="720px">
-
+<main class="container text-center mt-5">
+    <h1 class="display-4 font-weight-bold">Bem-Vindo ao Pinguino Chat!</h1>
+    <h3 class="text-muted mb-4">O melhor lugar para socializar com outros pinguinos!</h3>
+    
+    <div class="mt-4">
+        <img src="{{ url_for('static', filename='imgs/pinguino.webp') }}" alt="Pinguino Chat" class="img-fluid rounded shadow" style="max-width: 720px;">
+    </div>
 </main>
 {% endblock content %}
